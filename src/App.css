@@ -421,9 +421,9 @@ body {
 }
 
 .terrace-badge.sun {
-  background: rgba(253, 216, 53, 0.3);
-  color: #7a5000;
-  border: 1px solid rgba(253, 216, 53, 0.5);
+  background: #f9a825;
+  color: #fff;
+  border: none;
 }
 
 .terrace-badge.shade {
@@ -475,7 +475,7 @@ body {
 /* ── Locate button (glass) ── */
 .locate-btn {
   position: absolute;
-  bottom: 120px;
+  bottom: 200px;
   right: 16px;
   width: 42px;
   height: 42px;
@@ -590,4 +590,50 @@ body {
   .hero-circle  { width: 76px; height: 76px; }
   .hero-num     { font-size: 1.9rem; }
   .time-section { padding: 10px 20px; }
+}
+
+/* ── Mobile: bottom sheet ── */
+@media (max-width: 600px) {
+  .sidebar {
+    top: unset;
+    left: 8px;
+    right: 8px;
+    bottom: 8px;
+    width: unset;
+    max-height: 55vh;
+    border-radius: 20px;
+  }
+
+  .hero-section {
+    padding: 14px 16px 12px;
+    gap: 14px;
+  }
+
+  .hero-circle {
+    width: 72px;
+    height: 72px;
+  }
+
+  .hero-num { font-size: 1.7rem; }
+
+  .panel-top { padding: 16px 16px 0; }
+
+  .time-section { padding: 10px 16px; }
+
+  .time-input-wrapper input { font-size: 0.72rem; }
+
+  .panel-divider { margin: 0 16px; }
+
+  .terrace-item { padding: 9px 16px; }
+
+  .list-section-label { padding: 8px 16px 4px; }
+
+  .locate-btn {
+    bottom: calc(55vh + 20px);
+    right: 12px;
+  }
+
+  .mapboxgl-ctrl-bottom-left { left: 16px; bottom: calc(55vh + 8px); }
+
+  .mapboxgl-ctrl-bottom-right { bottom: calc(55vh + 8px); }
 }
