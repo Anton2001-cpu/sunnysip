@@ -38,6 +38,7 @@ export default function App() {
   const [sunTimes, setSunTimes] = useState(null)
   const [error, setError] = useState(false)
   const [selectedId, setSelectedId] = useState(null)
+  const [filterSun, setFilterSun] = useState(false)
 
   const debounceRef = useRef(null)
   const cacheRef = useRef(new Map())
@@ -177,6 +178,20 @@ export default function App() {
     setStats({ inSun: inSunCount, inShade: inShadeCount })
   }, [terraces, buildings, selectedTime])
 
+  // Pas opacity van markers aan als filter verandert
+  useEffect(() => {
+    markersRef.current.forEach((marker) => {
+      const el = marker.getElement()
+      if (filterSun && el.classList.contains('in-shade')) {
+        el.style.opacity = '0.25'
+        el.style.pointerEvents = 'none'
+      } else {
+        el.style.opacity = '1'
+        el.style.pointerEvents = ''
+      }
+    })
+  }, [filterSun, terraceResults])
+
   function goToMyLocation() {
     navigator.geolocation.getCurrentPosition(pos => {
       const { longitude, latitude } = pos.coords
@@ -202,9 +217,14 @@ export default function App() {
         </div>
 
         <div className="hero-section">
-          <div className={`hero-circle${sun && !sun.isAboveHorizon ? ' night' : ''}`}>
+          <div
+            className={`hero-circle${sun && !sun.isAboveHorizon ? ' night' : ''}${filterSun ? ' active' : ''}`}
+            onClick={() => setFilterSun(f => !f)}
+            title={filterSun ? 'Filter uitzetten' : 'Alleen terrassen in de zon tonen'}
+          >
             <span className="hero-num">{stats.inSun}</span>
             <span className="hero-label">in de zon</span>
+            {filterSun && <span className="hero-filter-dot" />}
           </div>
           <div className="stat-list">
             <div className="stat-row">
@@ -284,7 +304,16 @@ export default function App() {
             </div>
           )}
 
-          {sunTerraces.length > 0 && <div className="list-section-label">☀️ In de zon ({sunTerraces.length})</div>}
+          {sunTerraces.length > 0 && (
+            <div
+              className={`list-section-label clickable${filterSun ? ' filter-active' : ''}`}
+              onClick={() => setFilterSun(f => !f)}
+              title={filterSun ? 'Filter uitzetten' : 'Alleen in de zon tonen'}
+            >
+              ☀️ In de zon ({sunTerraces.length})
+              {filterSun && <span className="filter-pill">aan</span>}
+            </div>
+          )}
           {sunTerraces.map(({ terrace: t }) => (
             <div key={t.id} className={`terrace-item${selectedId === t.id ? ' selected' : ''}`} onClick={() => {
                 setSelectedId(t.id)
@@ -306,16 +335,25 @@ export default function App() {
             </div>
           ))}
 
-          {shadeTerraces.length > 0 && <div className="list-section-label">🌑 In de schaduw ({shadeTerraces.length})</div>}
+          {shadeTerraces.length > 0 && (
+            <div className={`list-section-label${filterSun ? ' faded' : ''}`}>
+              🌑 In de schaduw ({shadeTerraces.length})
+            </div>
+          )}
           {shadeTerraces.map(({ terrace: t }) => (
-            <div key={t.id} className={`terrace-item${selectedId === t.id ? ' selected' : ''}`} onClick={() => {
+            <div
+              key={t.id}
+              className={`terrace-item${selectedId === t.id ? ' selected' : ''}${filterSun ? ' faded' : ''}`}
+              onClick={() => {
+                if (filterSun) return
                 setSelectedId(t.id)
                 map.current?.flyTo({ center: t.lngLat, zoom: 18 })
                 setTimeout(() => {
                   const marker = markersRef.current.get(t.id)
                   if (marker && !marker.getPopup().isOpen()) marker.togglePopup()
                 }, 800)
-              }}>
+              }}
+            >
               <div className="terrace-dot shade">🌑</div>
               <div className="terrace-info">
                 <div className="terrace-name">{t.name}</div>

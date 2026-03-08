@@ -91,8 +91,8 @@ body {
 }
 
 .hero-circle {
-  width: 96px;
-  height: 96px;
+  width: 88px;
+  height: 88px;
   border-radius: 50%;
   background: linear-gradient(135deg, #fdd835, #f57f17);
   display: flex;
@@ -101,9 +101,20 @@ body {
   justify-content: center;
   flex-shrink: 0;
   box-shadow: 0 6px 24px rgba(245, 127, 23, 0.45);
-  cursor: default;
+  cursor: pointer;
   user-select: none;
   border: 3px solid rgba(255, 255, 255, 0.6);
+  position: relative;
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+
+.hero-circle:hover {
+  transform: scale(1.05);
+  box-shadow: 0 8px 28px rgba(245, 127, 23, 0.6);
+}
+
+.hero-circle.active {
+  box-shadow: 0 0 0 3px #fff, 0 6px 24px rgba(245, 127, 23, 0.5);
 }
 
 .hero-circle.night {
@@ -111,8 +122,19 @@ body {
   box-shadow: 0 6px 24px rgba(38, 50, 56, 0.4);
 }
 
+.hero-filter-dot {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.3);
+}
+
 .hero-num {
-  font-size: 2.4rem;
+  font-size: 2rem;
   font-weight: 800;
   color: #fff;
   line-height: 1;
@@ -120,12 +142,14 @@ body {
 }
 
 .hero-label {
-  font-size: 0.58rem;
+  font-size: 0.52rem;
   color: rgba(255, 255, 255, 0.9);
-  font-weight: 600;
+  font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.08em;
-  margin-top: 2px;
+  letter-spacing: 0.06em;
+  margin-top: 1px;
+  text-align: center;
+  line-height: 1.2;
 }
 
 /* ── Stat list ── */
@@ -261,6 +285,47 @@ body {
   color: rgba(26, 26, 46, 0.45);
   text-transform: uppercase;
   letter-spacing: 0.1em;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.list-section-label.clickable {
+  cursor: pointer;
+  transition: color 0.15s;
+}
+
+.list-section-label.clickable:hover {
+  color: rgba(26, 26, 46, 0.75);
+}
+
+.list-section-label.filter-active {
+  color: #f57f17;
+}
+
+.filter-pill {
+  font-size: 0.55rem;
+  background: #f57f17;
+  color: #fff;
+  padding: 1px 6px;
+  border-radius: 20px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+/* ── Faded state for shade items when filter active ── */
+.list-section-label.faded {
+  opacity: 0.3;
+}
+
+.terrace-item.faded {
+  opacity: 0.25;
+  cursor: default;
+}
+
+.terrace-item.faded:hover {
+  background: transparent;
 }
 
 /* ── Terrace list ── */
