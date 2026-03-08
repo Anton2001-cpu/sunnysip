@@ -78,14 +78,14 @@ export default function App() {
     if (map.current) return
     map.current = new mapboxgl.Map({
       container: mapContainer.current,
-      style: 'https://basemaps.cartocdn.com/gl/voyager-gl-style/style.json',
+      style: 'https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json',
       center: ANTWERP_CENTER,
       zoom: 15,
       pitch: 45,
     })
 
     map.current.on('load', () => {
-      // Taak 16: voeg gebouwen in vóór de eerste symbol-laag zodat straatnames zichtbaar blijven
+      // Voeg gebouwen in vóór de eerste symbol-laag zodat straatnames zichtbaar blijven
       const firstSymbolLayer = map.current.getStyle().layers.find(l => l.type === 'symbol')
       try {
         map.current.addLayer({
@@ -95,10 +95,10 @@ export default function App() {
           type: 'fill-extrusion',
           minzoom: 13,
           paint: {
-            'fill-extrusion-color': '#e0d6c8',
+            'fill-extrusion-color': '#2a2a2a',
             'fill-extrusion-height': ['coalesce', ['get', 'render_height'], 10],
             'fill-extrusion-base': ['coalesce', ['get', 'render_min_height'], 0],
-            'fill-extrusion-opacity': 0.6,
+            'fill-extrusion-opacity': 0.7,
           },
         }, firstSymbolLayer?.id)
       } catch (e) {
@@ -192,14 +192,49 @@ export default function App() {
       <div ref={mapContainer} className="map" />
 
       <div className="sidebar">
-        <div className="panel-header">
-          <div className="logo-area">
-            <div className="logo-icon">🌞</div>
-            <div className="logo-text">
-              <h1>SunnySip</h1>
-              <p>Welk terrasje zit in de zon?</p>
+        <div className="panel-top">
+          <div>
+            <div className="panel-title">Antwerpen</div>
+            <div className="panel-date">
+              {new Date(selectedTime).toLocaleDateString('nl-BE', { day: 'numeric', month: 'short', year: 'numeric' })}
             </div>
           </div>
+        </div>
+
+        <div className="hero-section">
+          <div className={`hero-circle${sun && !sun.isAboveHorizon ? ' night' : ''}`}>
+            <span className="hero-num">{stats.inSun}</span>
+            <span className="hero-label">in de zon</span>
+          </div>
+          <div className="stat-list">
+            <div className="stat-row">
+              <strong>{stats.inShade}</strong>
+              <span>— in schaduw</span>
+            </div>
+            {sun && (
+              <div className="stat-row">
+                <strong>{sun.altitudeDeg.toFixed(1)}°</strong>
+                <span>— hoogte</span>
+              </div>
+            )}
+            {sunTimes && (
+              <div className="stat-row">
+                <strong>{sunTimes.sunrise.toLocaleTimeString('nl-BE', { hour: '2-digit', minute: '2-digit' })}</strong>
+                <span>— zonsopgang</span>
+              </div>
+            )}
+            {sunTimes && (
+              <div className="stat-row">
+                <strong>{sunTimes.sunset.toLocaleTimeString('nl-BE', { hour: '2-digit', minute: '2-digit' })}</strong>
+                <span>— zonsondergang</span>
+              </div>
+            )}
+          </div>
+        </div>
+
+        <div className="panel-divider" />
+
+        <div className="time-section">
           <div className="time-row">
             <div className="time-input-wrapper">
               <span className="time-icon">📅</span>
@@ -226,23 +261,6 @@ export default function App() {
               }}
             >Nu</button>
           </div>
-        </div>
-
-        {sun && (
-          <div className={`sun-bar ${sun.isAboveHorizon ? '' : 'night'}`}>
-            <span className="sun-bar-icon">{sun.isAboveHorizon ? '☀️' : '🌙'}</span>
-            <div className="sun-bar-stats">
-              <div className="sun-bar-stat"><span>Hoogte</span><strong>{sun.altitudeDeg.toFixed(1)}°</strong></div>
-              <div className="sun-bar-stat"><span>Richting</span><strong>{sun.azimuthDeg.toFixed(0)}°</strong></div>
-              {sunTimes && <div className="sun-bar-stat"><span>Op</span><strong>{sunTimes.sunrise.toLocaleTimeString('nl-BE', { hour: '2-digit', minute: '2-digit' })}</strong></div>}
-              {sunTimes && <div className="sun-bar-stat"><span>Onder</span><strong>{sunTimes.sunset.toLocaleTimeString('nl-BE', { hour: '2-digit', minute: '2-digit' })}</strong></div>}
-            </div>
-          </div>
-        )}
-
-        <div className="count-chips">
-          <div className="chip sun">☀️ {stats.inSun} in de zon</div>
-          <div className="chip shade">🌑 {stats.inShade} in schaduw</div>
         </div>
 
         {loading && <div className="loading-bar" />}
