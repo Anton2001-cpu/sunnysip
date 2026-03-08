@@ -155,6 +155,7 @@ export default function App() {
       el.title = `${escapeHtml(terrace.name)} — ${inSun ? 'In de zon' : 'In de schaduw'}`
 
       const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${terrace.lngLat[1]},${terrace.lngLat[0]}`
+      const feedbackKey = `feedback_${terrace.id}_${selectedTime.slice(0,13)}`
       const popup = new mapboxgl.Popup({ offset: 40, closeButton: false, maxWidth: '220px' }).setHTML(`
         <div class="popup">
           <div class="popup-name">${escapeHtml(terrace.name)}</div>
@@ -162,9 +163,33 @@ export default function App() {
             <span class="popup-badge ${inSun ? 'sun' : 'shade'}">${inSun ? '☀️ In de zon' : '🌑 In de schaduw'}</span>
           </div>
           <div class="popup-type">${escapeHtml(terrace.type)}${terrace.hasOutdoorSeating ? ' · 🪑 Buiten zitten' : ''}</div>
+          <div class="popup-feedback" id="feedback-${terrace.id}">
+            <span class="popup-feedback-label">Klopt dit?</span>
+            <div class="popup-feedback-btns">
+              <button class="feedback-btn yes" data-id="${terrace.id}" data-vote="yes">👍 Ja</button>
+              <button class="feedback-btn no" data-id="${terrace.id}" data-vote="no">👎 Nee</button>
+            </div>
+          </div>
           <a class="popup-action" href="${mapsUrl}" target="_blank" rel="noopener noreferrer">📍 Openen in Maps →</a>
         </div>
       `)
+
+      popup.on('open', () => {
+        const existing = localStorage.getItem(feedbackKey)
+        const box = document.getElementById(`feedback-${terrace.id}`)
+        if (!box) return
+        if (existing) {
+          box.innerHTML = `<span class="popup-feedback-thanks">${existing === 'yes' ? '👍 Bedankt voor je feedback!' : '👎 Bedankt, we verbeteren dit!'}</span>`
+          return
+        }
+        box.querySelectorAll('.feedback-btn').forEach(btn => {
+          btn.addEventListener('click', () => {
+            const vote = btn.dataset.vote
+            localStorage.setItem(feedbackKey, vote)
+            box.innerHTML = `<span class="popup-feedback-thanks">${vote === 'yes' ? '👍 Bedankt!' : '👎 Bedankt, we verbeteren dit!'}</span>`
+          })
+        })
+      })
 
       const marker = new mapboxgl.Marker(el, { anchor: 'bottom', offset: [0, -4] })
         .setLngLat(terrace.lngLat)

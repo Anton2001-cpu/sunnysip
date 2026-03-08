@@ -446,16 +446,16 @@ body {
   transform: scale(1.2) translateY(-3px);
 }
 
-/* Zon-pin: groot, geel, met gloed */
+/* Zon-pin: groot, fel geel, met gloed */
 .in-sun {
-  filter: drop-shadow(0 0 8px rgba(253, 184, 19, 0.8))
-          drop-shadow(0 3px 6px rgba(0,0,0,0.3));
+  filter: drop-shadow(0 0 12px rgba(255, 180, 0, 1))
+          drop-shadow(0 4px 8px rgba(0,0,0,0.4));
 }
 
-/* Schaduw-pin: kleiner, grijs, subtiel */
+/* Schaduw-pin: klein, grijs, transparant → valt weg op de achtergrond */
 .in-shade {
-  filter: drop-shadow(0 2px 5px rgba(0,0,0,0.35));
-  opacity: 0.8;
+  filter: drop-shadow(0 1px 3px rgba(0,0,0,0.3));
+  opacity: 0.45;
 }
 
 .pin-head {
@@ -466,28 +466,28 @@ body {
   border: 3px solid rgba(255, 255, 255, 0.95);
 }
 
-/* Zon: groter + warme gloed */
+/* Zon: groot + fel */
 .in-sun .pin-head {
-  width: 44px;
-  height: 44px;
-  font-size: 1.3rem;
+  width: 50px;
+  height: 50px;
+  font-size: 1.5rem;
   background: linear-gradient(135deg, #ffe033, #ff8c00);
-  box-shadow: 0 0 0 4px rgba(255, 180, 0, 0.3);
 }
 
-/* Schaduw: kleiner + koel grijs */
+/* Schaduw: klein + donkergrijs */
 .in-shade .pin-head {
-  width: 34px;
-  height: 34px;
-  font-size: 1rem;
-  background: linear-gradient(135deg, #b0bec5, #546e7a);
+  width: 26px;
+  height: 26px;
+  font-size: 0.8rem;
+  background: #78909c;
+  border-width: 2px;
 }
 
-/* Pulserende ring rond zon-pins */
+/* Pulserende gloed rond zon-pins */
 @keyframes sun-pulse {
-  0%   { box-shadow: 0 0 0 0 rgba(255, 180, 0, 0.5), 0 0 0 4px rgba(255, 180, 0, 0.2); }
-  70%  { box-shadow: 0 0 0 8px rgba(255, 180, 0, 0), 0 0 0 4px rgba(255, 180, 0, 0.1); }
-  100% { box-shadow: 0 0 0 0 rgba(255, 180, 0, 0), 0 0 0 4px rgba(255, 180, 0, 0.2); }
+  0%   { box-shadow: 0 0 0 0   rgba(255,180,0,0.7), 0 0 0 6px rgba(255,180,0,0.25); }
+  70%  { box-shadow: 0 0 0 12px rgba(255,180,0,0),   0 0 0 6px rgba(255,180,0,0.08); }
+  100% { box-shadow: 0 0 0 0   rgba(255,180,0,0),   0 0 0 6px rgba(255,180,0,0.25); }
 }
 
 .in-sun .pin-head {
@@ -502,8 +502,8 @@ body {
   margin-top: -2px;
 }
 
-.in-sun .pin-point   { border-left-width: 9px; border-right-width: 9px; border-top: 14px solid #ff8c00; }
-.in-shade .pin-point { border-left-width: 6px; border-right-width: 6px; border-top: 10px solid #546e7a; }
+.in-sun .pin-point   { border-left-width: 11px; border-right-width: 11px; border-top: 16px solid #ff8c00; }
+.in-shade .pin-point { border-left-width: 4px;  border-right-width: 4px;  border-top: 7px  solid #78909c; }
 
 /* ── Locate button (glass) ── */
 .locate-btn {
@@ -595,6 +595,55 @@ body {
 
 .popup-action:hover {
   text-decoration: underline;
+}
+
+/* ── Popup feedback ── */
+.popup-feedback {
+  margin-top: 10px;
+  padding-top: 8px;
+  border-top: 1px solid rgba(0,0,0,0.08);
+}
+
+.popup-feedback-label {
+  font-size: 0.68rem;
+  color: rgba(26,26,46,0.55);
+  font-weight: 600;
+  display: block;
+  margin-bottom: 6px;
+}
+
+.popup-feedback-btns {
+  display: flex;
+  gap: 6px;
+}
+
+.feedback-btn {
+  flex: 1;
+  border: 1px solid rgba(0,0,0,0.12);
+  border-radius: 8px;
+  background: rgba(255,255,255,0.5);
+  font-size: 0.7rem;
+  font-weight: 600;
+  font-family: inherit;
+  padding: 5px 0;
+  cursor: pointer;
+  transition: background 0.15s, transform 0.1s;
+  color: #1a1a2e;
+}
+
+.feedback-btn:hover {
+  transform: scale(1.04);
+}
+
+.feedback-btn.yes:hover  { background: rgba(100,200,100,0.25); border-color: rgba(80,180,80,0.4); }
+.feedback-btn.no:hover   { background: rgba(220,80,80,0.15);   border-color: rgba(200,60,60,0.3); }
+
+.popup-feedback-thanks {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: rgba(26,26,46,0.65);
+  display: block;
+  padding: 2px 0;
 }
 
 /* ── Empty / error state ── */
