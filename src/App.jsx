@@ -154,6 +154,7 @@ export default function App() {
       `
       el.title = `${escapeHtml(terrace.name)} — ${inSun ? 'In de zon' : 'In de schaduw'}`
 
+      const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${terrace.lngLat[1]},${terrace.lngLat[0]}`
       const popup = new mapboxgl.Popup({ offset: 40, closeButton: false, maxWidth: '220px' }).setHTML(`
         <div class="popup">
           <div class="popup-name">${escapeHtml(terrace.name)}</div>
@@ -161,7 +162,7 @@ export default function App() {
             <span class="popup-badge ${inSun ? 'sun' : 'shade'}">${inSun ? '☀️ In de zon' : '🌑 In de schaduw'}</span>
           </div>
           <div class="popup-type">${escapeHtml(terrace.type)}${terrace.hasOutdoorSeating ? ' · 🪑 Buiten zitten' : ''}</div>
-          <div class="popup-action">Bekijk op kaart →</div>
+          <a class="popup-action" href="${mapsUrl}" target="_blank" rel="noopener noreferrer">📍 Openen in Maps →</a>
         </div>
       `)
 
@@ -193,10 +194,24 @@ export default function App() {
   }, [filterSun, terraceResults])
 
   function goToMyLocation() {
-    navigator.geolocation.getCurrentPosition(pos => {
-      const { longitude, latitude } = pos.coords
-      map.current?.flyTo({ center: [longitude, latitude], zoom: 15 })
-    })
+    if (!navigator.geolocation) {
+      alert('Je browser ondersteunt geen locatie.')
+      return
+    }
+    navigator.geolocation.getCurrentPosition(
+      pos => {
+        const { longitude, latitude } = pos.coords
+        map.current?.flyTo({ center: [longitude, latitude], zoom: 15 })
+      },
+      err => {
+        if (err.code === 1) {
+          alert('Locatietoegang geweigerd. Sta locatie toe in je browserinstellingen.')
+        } else {
+          alert('Kon je locatie niet bepalen. Probeer opnieuw.')
+        }
+      },
+      { timeout: 8000 }
+    )
   }
 
   const sunTerraces = terraceResults.filter(r => r.inSun)

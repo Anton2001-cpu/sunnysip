@@ -438,7 +438,6 @@ body {
   flex-direction: column;
   align-items: center;
   cursor: pointer;
-  filter: drop-shadow(0 3px 8px rgba(0,0,0,0.32));
   transition: transform 0.15s;
   user-select: none;
 }
@@ -447,30 +446,64 @@ body {
   transform: scale(1.2) translateY(-3px);
 }
 
+/* Zon-pin: groot, geel, met gloed */
+.in-sun {
+  filter: drop-shadow(0 0 8px rgba(253, 184, 19, 0.8))
+          drop-shadow(0 3px 6px rgba(0,0,0,0.3));
+}
+
+/* Schaduw-pin: kleiner, grijs, subtiel */
+.in-shade {
+  filter: drop-shadow(0 2px 5px rgba(0,0,0,0.35));
+  opacity: 0.8;
+}
+
 .pin-head {
-  width: 40px;
-  height: 40px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.2rem;
-  border: 2.5px solid rgba(255, 255, 255, 0.9);
+  border: 3px solid rgba(255, 255, 255, 0.95);
 }
 
-.in-sun .pin-head   { background: linear-gradient(135deg, #fdd835, #f57f17); }
-.in-shade .pin-head { background: linear-gradient(135deg, #cfd8dc, #78909c); }
+/* Zon: groter + warme gloed */
+.in-sun .pin-head {
+  width: 44px;
+  height: 44px;
+  font-size: 1.3rem;
+  background: linear-gradient(135deg, #ffe033, #ff8c00);
+  box-shadow: 0 0 0 4px rgba(255, 180, 0, 0.3);
+}
+
+/* Schaduw: kleiner + koel grijs */
+.in-shade .pin-head {
+  width: 34px;
+  height: 34px;
+  font-size: 1rem;
+  background: linear-gradient(135deg, #b0bec5, #546e7a);
+}
+
+/* Pulserende ring rond zon-pins */
+@keyframes sun-pulse {
+  0%   { box-shadow: 0 0 0 0 rgba(255, 180, 0, 0.5), 0 0 0 4px rgba(255, 180, 0, 0.2); }
+  70%  { box-shadow: 0 0 0 8px rgba(255, 180, 0, 0), 0 0 0 4px rgba(255, 180, 0, 0.1); }
+  100% { box-shadow: 0 0 0 0 rgba(255, 180, 0, 0), 0 0 0 4px rgba(255, 180, 0, 0.2); }
+}
+
+.in-sun .pin-head {
+  animation: sun-pulse 2s ease-out infinite;
+}
 
 .pin-point {
   width: 0;
   height: 0;
   border-left: 8px solid transparent;
   border-right: 8px solid transparent;
-  margin-top: -1px;
+  margin-top: -2px;
 }
 
-.in-sun .pin-point   { border-top: 13px solid #f57f17; }
-.in-shade .pin-point { border-top: 13px solid #78909c; }
+.in-sun .pin-point   { border-left-width: 9px; border-right-width: 9px; border-top: 14px solid #ff8c00; }
+.in-shade .pin-point { border-left-width: 6px; border-right-width: 6px; border-top: 10px solid #546e7a; }
 
 /* ── Locate button (glass) ── */
 .locate-btn {
@@ -551,11 +584,17 @@ body {
 }
 
 .popup-action {
+  display: block;
   font-size: 0.7rem;
   color: #1a73e8;
   font-weight: 600;
   margin-top: 8px;
   cursor: pointer;
+  text-decoration: none;
+}
+
+.popup-action:hover {
+  text-decoration: underline;
 }
 
 /* ── Empty / error state ── */
