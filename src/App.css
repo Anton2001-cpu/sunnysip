@@ -369,19 +369,14 @@ body {
 }
 
 .terrace-dot {
-  width: 34px;
-  height: 34px;
+  width: 10px;
+  height: 10px;
   border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1rem;
   flex-shrink: 0;
-  border: 1px solid rgba(255, 255, 255, 0.5);
 }
 
-.terrace-dot.sun   { background: rgba(253, 216, 53, 0.25); }
-.terrace-dot.shade { background: rgba(255, 255, 255, 0.2); }
+.terrace-dot.sun   { background: #f9a825; box-shadow: 0 0 0 3px rgba(249,168,37,0.2); }
+.terrace-dot.shade { background: #90a4ae; }
 
 .terrace-info { flex: 1; min-width: 0; }
 
@@ -407,7 +402,17 @@ body {
   text-transform: capitalize;
 }
 
-.outdoor-badge { font-size: 0.7rem; opacity: 0.7; }
+.outdoor-badge {
+  font-size: 0.62rem;
+  font-weight: 600;
+  color: #2e7d32;
+  background: rgba(46,125,50,0.12);
+  border: 1px solid rgba(46,125,50,0.25);
+  border-radius: 4px;
+  padding: 1px 5px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
 
 .terrace-badge {
   font-size: 0.65rem;
@@ -446,16 +451,17 @@ body {
   transform: scale(1.2) translateY(-3px);
 }
 
-/* Zon-pin: groot, fel geel, met gloed */
+/* Zon-pin: groot, fel, opvallend */
 .in-sun {
-  filter: drop-shadow(0 0 12px rgba(255, 180, 0, 1))
-          drop-shadow(0 4px 8px rgba(0,0,0,0.4));
+  filter: drop-shadow(0 0 14px rgba(255, 180, 0, 0.95))
+          drop-shadow(0 4px 10px rgba(0,0,0,0.35));
+  z-index: 2;
 }
 
-/* Schaduw-pin: klein, grijs, transparant → valt weg op de achtergrond */
+/* Schaduw-pin: klein, grijs, bijna onzichtbaar */
 .in-shade {
-  filter: drop-shadow(0 1px 3px rgba(0,0,0,0.3));
-  opacity: 0.45;
+  filter: drop-shadow(0 1px 2px rgba(0,0,0,0.2));
+  opacity: 0.28;
 }
 
 .pin-head {
@@ -466,32 +472,32 @@ body {
   border: 3px solid rgba(255, 255, 255, 0.95);
 }
 
-/* Zon: groot + fel */
+/* Zon: groot + helder */
 .in-sun .pin-head {
-  width: 50px;
-  height: 50px;
-  font-size: 1.5rem;
+  width: 54px;
+  height: 54px;
+  font-size: 1.6rem;
   background: linear-gradient(135deg, #ffe033, #ff8c00);
 }
 
-/* Schaduw: klein + donkergrijs */
+/* Schaduw: klein + grijs */
 .in-shade .pin-head {
-  width: 26px;
-  height: 26px;
-  font-size: 0.8rem;
-  background: #78909c;
-  border-width: 2px;
+  width: 20px;
+  height: 20px;
+  font-size: 0.6rem;
+  background: #90a4ae;
+  border-width: 1.5px;
 }
 
 /* Pulserende gloed rond zon-pins */
 @keyframes sun-pulse {
-  0%   { box-shadow: 0 0 0 0   rgba(255,180,0,0.7), 0 0 0 6px rgba(255,180,0,0.25); }
-  70%  { box-shadow: 0 0 0 12px rgba(255,180,0,0),   0 0 0 6px rgba(255,180,0,0.08); }
-  100% { box-shadow: 0 0 0 0   rgba(255,180,0,0),   0 0 0 6px rgba(255,180,0,0.25); }
+  0%   { box-shadow: 0 0 0 0    rgba(255,180,0,0.8), 0 0 0 6px rgba(255,180,0,0.3); }
+  70%  { box-shadow: 0 0 0 14px rgba(255,180,0,0),   0 0 0 6px rgba(255,180,0,0.1); }
+  100% { box-shadow: 0 0 0 0    rgba(255,180,0,0),   0 0 0 6px rgba(255,180,0,0.3); }
 }
 
 .in-sun .pin-head {
-  animation: sun-pulse 2s ease-out infinite;
+  animation: sun-pulse 2.2s ease-out infinite;
 }
 
 .pin-point {
@@ -502,8 +508,8 @@ body {
   margin-top: -2px;
 }
 
-.in-sun .pin-point   { border-left-width: 11px; border-right-width: 11px; border-top: 16px solid #ff8c00; }
-.in-shade .pin-point { border-left-width: 4px;  border-right-width: 4px;  border-top: 7px  solid #78909c; }
+.in-sun .pin-point   { border-left-width: 12px; border-right-width: 12px; border-top: 17px solid #ff8c00; }
+.in-shade .pin-point { border-left-width: 3px;  border-right-width: 3px;  border-top: 5px  solid #90a4ae; }
 
 /* ── Locate button (glass) ── */
 .locate-btn {
@@ -574,7 +580,8 @@ body {
 }
 
 .popup-badge.sun   { background: rgba(253,216,53,0.3); color: #7a5000; border: 1px solid rgba(253,216,53,0.5); }
-.popup-badge.shade { background: rgba(255,255,255,0.35); color: rgba(26,26,46,0.6); border: 1px solid rgba(255,255,255,0.5); }
+.popup-badge.shade   { background: rgba(255,255,255,0.35); color: rgba(26,26,46,0.6); border: 1px solid rgba(255,255,255,0.5); }
+.popup-badge.terrace { background: rgba(46,125,50,0.12); color: #2e7d32; border: 1px solid rgba(46,125,50,0.3); margin-left: 4px; }
 
 .popup-type {
   font-size: 0.7rem;
@@ -650,9 +657,29 @@ body {
 .empty-state {
   padding: 40px 20px;
   text-align: center;
-  color: rgba(26, 26, 46, 0.4);
+  color: rgba(26, 26, 46, 0.5);
   font-size: 0.82rem;
   line-height: 1.6;
+}
+
+.empty-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: rgba(0,0,0,0.08);
+  color: rgba(26,26,46,0.4);
+  font-size: 1.1rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 10px;
+}
+
+.empty-sub {
+  font-size: 0.78rem;
+  color: rgba(26,26,46,0.38);
+  margin-top: 4px;
 }
 
 .retry-btn {

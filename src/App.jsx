@@ -107,7 +107,6 @@ export default function App() {
       }
 
       map.current.addControl(new mapboxgl.NavigationControl(), 'bottom-right')
-      map.current.addControl(new mapboxgl.ScaleControl({ unit: 'metric' }), 'bottom-right')
 
       loadData(ANTWERP_CENTER[1], ANTWERP_CENTER[0])
     })
@@ -154,23 +153,24 @@ export default function App() {
       `
       el.title = `${escapeHtml(terrace.name)} — ${inSun ? 'In de zon' : 'In de schaduw'}`
 
-      const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${terrace.lngLat[1]},${terrace.lngLat[0]}`
+      const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(terrace.name + ', Antwerpen')}`
       const feedbackKey = `feedback_${terrace.id}_${selectedTime.slice(0,13)}`
       const popup = new mapboxgl.Popup({ offset: 40, closeButton: false, maxWidth: '220px' }).setHTML(`
         <div class="popup">
           <div class="popup-name">${escapeHtml(terrace.name)}</div>
           <div class="popup-row">
-            <span class="popup-badge ${inSun ? 'sun' : 'shade'}">${inSun ? '☀️ In de zon' : '🌑 In de schaduw'}</span>
+            <span class="popup-badge ${inSun ? 'sun' : 'shade'}">${inSun ? 'In de zon' : 'In de schaduw'}</span>
+            ${terrace.hasOutdoorSeating ? '<span class="popup-badge terrace">Terras</span>' : ''}
           </div>
-          <div class="popup-type">${escapeHtml(terrace.type)}${terrace.hasOutdoorSeating ? ' · 🪑 Buiten zitten' : ''}</div>
+          <div class="popup-type">${escapeHtml(terrace.type)}</div>
           <div class="popup-feedback" id="feedback-${terrace.id}">
             <span class="popup-feedback-label">Klopt dit?</span>
             <div class="popup-feedback-btns">
-              <button class="feedback-btn yes" data-id="${terrace.id}" data-vote="yes">👍 Ja</button>
-              <button class="feedback-btn no" data-id="${terrace.id}" data-vote="no">👎 Nee</button>
+              <button class="feedback-btn yes" data-id="${terrace.id}" data-vote="yes">Ja</button>
+              <button class="feedback-btn no" data-id="${terrace.id}" data-vote="no">Nee</button>
             </div>
           </div>
-          <a class="popup-action" href="${mapsUrl}" target="_blank" rel="noopener noreferrer">📍 Openen in Maps →</a>
+          <a class="popup-action" href="${mapsUrl}" target="_blank" rel="noopener noreferrer">Openen in Maps →</a>
         </div>
       `)
 
@@ -297,7 +297,6 @@ export default function App() {
         <div className="time-section">
           <div className="time-row">
             <div className="time-input-wrapper">
-              <span className="time-icon">📅</span>
               <input
                 type="date"
                 value={selectedDate}
@@ -305,7 +304,6 @@ export default function App() {
               />
             </div>
             <div className="time-input-wrapper">
-              <span className="time-icon">🕐</span>
               <input
                 type="time"
                 value={selectedHour}
@@ -328,19 +326,22 @@ export default function App() {
         <div className="terrace-list">
           {error && (
             <div className="empty-state">
-              <div style={{ fontSize: '2rem', marginBottom: 8 }}>⚠️</div>
+              <div className="empty-icon">!</div>
               <div>Kon geen data laden</div>
-              <div style={{ fontSize: '0.75rem', marginTop: 4 }}>Controleer je internetverbinding</div>
+              <div className="empty-sub">Controleer je internetverbinding</div>
               <button className="retry-btn" onClick={() => { const c = map.current?.getCenter(); if (c) loadData(c.lat, c.lng) }}>
                 Probeer opnieuw
               </button>
             </div>
           )}
+          {!error && terraceResults.length === 0 && loading && (
+            <div className="empty-state">
+              <div className="empty-sub">Terrassen worden geladen...</div>
+            </div>
+          )}
           {!error && terraceResults.length === 0 && !loading && (
             <div className="empty-state">
-              <div style={{ fontSize: '2rem', marginBottom: 8 }}>🍺</div>
-              <div>Geen terrassen gevonden</div>
-              <div style={{ fontSize: '0.75rem', marginTop: 4 }}>Beweeg de kaart om meer te laden</div>
+              <div className="empty-sub">Geen terrassen gevonden.<br/>Beweeg de kaart om meer te laden.</div>
             </div>
           )}
 
@@ -350,7 +351,7 @@ export default function App() {
               onClick={() => setFilterSun(f => !f)}
               title={filterSun ? 'Filter uitzetten' : 'Alleen in de zon tonen'}
             >
-              ☀️ In de zon ({sunTerraces.length})
+              In de zon ({sunTerraces.length})
               {filterSun && <span className="filter-pill">aan</span>}
             </div>
           )}
@@ -363,12 +364,12 @@ export default function App() {
                   if (marker && !marker.getPopup().isOpen()) marker.togglePopup()
                 }, 800)
               }}>
-              <div className="terrace-dot sun">☀️</div>
+              <div className="terrace-dot sun" />
               <div className="terrace-info">
                 <div className="terrace-name">{t.name}</div>
                 <div className="terrace-meta">
                   <span className="terrace-type">{t.type}</span>
-                  {t.hasOutdoorSeating && <span className="outdoor-badge">🪑</span>}
+                  {t.hasOutdoorSeating && <span className="outdoor-badge">terras</span>}
                 </div>
               </div>
               <div className="terrace-badge sun">Zon</div>
@@ -377,7 +378,7 @@ export default function App() {
 
           {shadeTerraces.length > 0 && (
             <div className={`list-section-label${filterSun ? ' faded' : ''}`}>
-              🌑 In de schaduw ({shadeTerraces.length})
+              In de schaduw ({shadeTerraces.length})
             </div>
           )}
           {shadeTerraces.map(({ terrace: t }) => (
@@ -394,12 +395,12 @@ export default function App() {
                 }, 800)
               }}
             >
-              <div className="terrace-dot shade">🌑</div>
+              <div className="terrace-dot shade" />
               <div className="terrace-info">
                 <div className="terrace-name">{t.name}</div>
                 <div className="terrace-meta">
                   <span className="terrace-type">{t.type}</span>
-                  {t.hasOutdoorSeating && <span className="outdoor-badge">🪑</span>}
+                  {t.hasOutdoorSeating && <span className="outdoor-badge">terras</span>}
                 </div>
               </div>
               <div className="terrace-badge shade">Schaduw</div>
@@ -409,7 +410,9 @@ export default function App() {
       </div>
 
       <button className="locate-btn" onClick={goToMyLocation} title="Mijn locatie">
-        📍
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+          <circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/>
+        </svg>
       </button>
     </div>
   )

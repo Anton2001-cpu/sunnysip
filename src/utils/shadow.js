@@ -42,28 +42,30 @@ function isShadowCastOnPoint(terraceLngLat, building, sun) {
 
 /**
  * Berekent de schaduwpolygoon van een gebouw.
- * De schaduw is de projectie van het gebouw in de tegenovergestelde richting van de zon.
+ * Gebruikt convex hull over originele + verschoven hoeken voor correcte resultaten
+ * bij onregelmatige (niet-convexe) gebouwen.
  */
 function buildingShadowPolygon(building, sun) {
   const { altitudeDeg, azimuthDeg } = sun
-  if (altitudeDeg <= 0) return null
+  if (altitudeDeg <= 1) return null  // negeer zeer lage zon (lange foute schaduwen)
 
-  // Schaduwlengte = hoogte / tan(zonhoogte)
-  // We werken in graden en converteren naar ~meters op 51° breedte
-  const shadowLength = building.height / Math.tan(altitudeDeg * Math.PI / 180)
+  // Schaduwlengte = hoogte / tan(zonhoogte), in km
+  const altRad = altitudeDeg * Math.PI / 180
+  const shadowLength = building.height / Math.tan(altRad) / 1000
 
-  // Richting van schaduw = tegenovergesteld aan zon
+  // Richting van schaduw = tegenovergesteld aan zon (azimuth is al compass N=0)
   const shadowDir = (azimuthDeg + 180) % 360
 
-  // Verschuif elke hoek van het gebouw in schaduwrichting
   const coords = building.polygon.geometry.coordinates[0]
+
+  // Projecteer elke hoek in schaduwrichting
   const shifted = coords.map(coord => {
-    const pt = turf.point(coord)
-    const moved = turf.destination(pt, shadowLength / 1000, shadowDir, { units: 'kilometers' })
+    const moved = turf.destination(turf.point(coord), shadowLength, shadowDir, { units: 'kilometers' })
     return moved.geometry.coordinates
   })
 
-  // Maak een polygoon die origineel + verschoven omhulsel bevat
-  const combined = [...coords, ...shifted.reverse(), coords[0]]
-  return turf.polygon([combined])
+  // Convex hull van originele + verschoven hoeken → correcte schaduwvorm
+  const allPoints = turf.featureCollection([...coords, ...shifted].map(c => turf.point(c)))
+  const hull = turf.convex(allPoints)
+  return hull || null
 }
