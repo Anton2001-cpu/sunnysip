@@ -79,7 +79,7 @@ export default function App() {
     if (map.current) return
     map.current = new mapboxgl.Map({
       container: mapContainer.current,
-      style: 'https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json',
+      style: 'https://basemaps.cartocdn.com/gl/voyager-gl-style/style.json',
       center: ANTWERP_CENTER,
       zoom: 15,
       pitch: 45,
@@ -96,7 +96,7 @@ export default function App() {
           type: 'fill-extrusion',
           minzoom: 13,
           paint: {
-            'fill-extrusion-color': '#2a2a2a',
+            'fill-extrusion-color': '#e0d6c8',
             'fill-extrusion-height': ['coalesce', ['get', 'render_height'], 10],
             'fill-extrusion-base': ['coalesce', ['get', 'render_min_height'], 0],
             'fill-extrusion-opacity': 0.7,
