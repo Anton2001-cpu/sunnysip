@@ -95,6 +95,28 @@ The "Nu" button resets the time input to the current moment, but it uses the loc
 
 ---
 
+## Cybersecurity
+
+## Task 27 — Beveilig de Mapbox token met een URL-beperking
+De Mapbox token staat in de frontend code en is daardoor zichtbaar voor iedereen die de browser devtools opent. Iemand kan die token kopiëren en gebruiken op hun eigen project, op jouw kosten. Ga naar mapbox.com, open de token instellingen, en beperk de token tot alleen de URL van de live site (bv. sunnysip.vercel.app). Zo werkt de token nergens anders.
+
+## Task 28 — Zorg dat het .env bestand nooit op GitHub komt
+Het .env bestand bevat de geheime Mapbox token. Controleer of .env in het .gitignore bestand staat. Als dat niet zo is, voeg het toe. Controleer ook of de token niet per ongeluk al in een vorige commit zit — als dat zo is, moet de token onmiddellijk vernieuwd worden op mapbox.com want een gepubliceerde token is gecompromitteerd.
+
+## Task 29 — Bescherm tegen XSS in de popup
+De popup op de kaart wordt opgebouwd met directe HTML, inclusief de terrassenaam uit OpenStreetMap. Als een terrassenaam speciale tekens bevat zoals < of > of een script-tag, kan dat onverwacht gedrag veroorzaken in de browser. Zorg dat alle tekst die van buiten komt (naam, type) eerst door een escape-functie gaat voordat het in de popup HTML wordt gezet. Zo kan kwaadaardige tekst nooit als echte HTML worden uitgevoerd.
+
+## Task 30 — Beperk hoe vaak de API opgeroepen wordt
+Elke keer dat de gebruiker de kaart beweegt, stuurt de app een verzoek naar OpenStreetMap. Als iemand de kaart snel heen en weer sleept, worden er tientallen verzoeken tegelijk verstuurd. Voeg een vertraging in van bijvoorbeeld 1 seconde: wacht tot de kaart stilstaat voordat het verzoek verstuurd wordt. Dit beschermt zowel de OpenStreetMap servers als de eigen app tegen overbelasting.
+
+## Task 31 — Dwing HTTPS af
+De live site mag nooit bereikbaar zijn via onbeveiligd HTTP. Vercel doet dit automatisch, maar controleer na het deployen dat de URL altijd met https:// begint en dat HTTP-bezoeken automatisch doorgestuurd worden naar HTTPS. Zo worden gegevens tussen de browser en de server altijd versleuteld.
+
+## Task 32 — Controleer de dependencies op bekende kwetsbaarheden
+Voer npm audit uit in de projectmap. Dit toont een lijst van npm-pakketten die bekende beveiligingsproblemen hebben. Los alle "high" en "critical" meldingen op door de betrokken pakketten bij te werken. Dit is een standaard stap voor elk project dat online gezet wordt.
+
+---
+
 ## Task 26 — LAST STEP: Deploy the app for free via Vercel
 
 Deploy SunnySip online for free using Vercel. This is the easiest option for a Vite/React app and takes about 5 minutes.

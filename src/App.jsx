@@ -1,12 +1,10 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
-import mapboxgl from 'mapbox-gl'
-import 'mapbox-gl/dist/mapbox-gl.css'
+import mapboxgl from 'maplibre-gl'
+import 'maplibre-gl/dist/maplibre-gl.css'
 import { getSunPosition, getSunTimes } from './utils/sun'
 import { isTerraceInSun } from './utils/shadow'
 import { fetchTerraces, fetchBuildings } from './utils/overpass'
 import './App.css'
-
-mapboxgl.accessToken = import.meta.env.VITE_MAPBOX_TOKEN
 
 const ANTWERP_CENTER = [4.4025, 51.2194]
 
@@ -57,7 +55,7 @@ export default function App() {
     if (map.current) return
     map.current = new mapboxgl.Map({
       container: mapContainer.current,
-      style: 'mapbox://styles/mapbox/streets-v12',
+      style: 'https://basemaps.cartocdn.com/gl/voyager-gl-style/style.json',
       center: ANTWERP_CENTER,
       zoom: 15,
       pitch: 45,
@@ -66,20 +64,23 @@ export default function App() {
     map.current.on('load', () => {
       // Taak 16: voeg gebouwen in vóór de eerste symbol-laag zodat straatnames zichtbaar blijven
       const firstSymbolLayer = map.current.getStyle().layers.find(l => l.type === 'symbol')
-      map.current.addLayer({
-        id: '3d-buildings',
-        source: 'composite',
-        'source-layer': 'building',
-        filter: ['==', 'extrude', 'true'],
-        type: 'fill-extrusion',
-        minzoom: 13,
-        paint: {
-          'fill-extrusion-color': '#e0d6c8',
-          'fill-extrusion-height': ['get', 'height'],
-          'fill-extrusion-base': ['get', 'min_height'],
-          'fill-extrusion-opacity': 0.6,
-        },
-      }, firstSymbolLayer?.id)
+      try {
+        map.current.addLayer({
+          id: '3d-buildings',
+          source: 'carto',
+          'source-layer': 'building',
+          type: 'fill-extrusion',
+          minzoom: 13,
+          paint: {
+            'fill-extrusion-color': '#e0d6c8',
+            'fill-extrusion-height': ['coalesce', ['get', 'render_height'], 10],
+            'fill-extrusion-base': ['coalesce', ['get', 'render_min_height'], 0],
+            'fill-extrusion-opacity': 0.6,
+          },
+        }, firstSymbolLayer?.id)
+      } catch (e) {
+        // 3D gebouwen niet beschikbaar in deze stijl
+      }
 
       map.current.addControl(new mapboxgl.NavigationControl(), 'bottom-right')
       map.current.addControl(new mapboxgl.ScaleControl({ unit: 'metric' }), 'bottom-right')
