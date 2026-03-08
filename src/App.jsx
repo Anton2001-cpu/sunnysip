@@ -6,6 +6,16 @@ import { isTerraceInSun } from './utils/shadow'
 import { fetchTerraces, fetchBuildings } from './utils/overpass'
 import './App.css'
 
+// Beveiligt tegen XSS: zet gevaarlijke HTML-tekens om naar veilige tekst
+function escapeHtml(str) {
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;')
+}
+
 const ANTWERP_CENTER = [4.4025, 51.2194]
 
 export default function App() {
@@ -25,6 +35,8 @@ export default function App() {
   const [sunTimes, setSunTimes] = useState(null)
   const [error, setError] = useState(false)
   const [selectedId, setSelectedId] = useState(null)
+
+  const debounceRef = useRef(null)
 
   const loadData = useCallback(async (lat, lng) => {
     setLoading(true)
@@ -88,9 +100,13 @@ export default function App() {
       loadData(ANTWERP_CENTER[1], ANTWERP_CENTER[0])
     })
 
+    // Debounce: wacht 800ms nadat de kaart stilstaat voor een API-call
     map.current.on('moveend', () => {
-      const center = map.current.getCenter()
-      loadData(center.lat, center.lng)
+      clearTimeout(debounceRef.current)
+      debounceRef.current = setTimeout(() => {
+        const center = map.current.getCenter()
+        loadData(center.lat, center.lng)
+      }, 800)
     })
   }, [loadData])
 
@@ -124,15 +140,15 @@ export default function App() {
         <div class="pin-body"><span class="pin-emoji">${inSun ? '☀️' : '🌑'}</span></div>
         <div class="pin-tip"></div>
       `
-      el.title = `${terrace.name} — ${inSun ? 'In de zon' : 'In de schaduw'}`
+      el.title = `${escapeHtml(terrace.name)} — ${inSun ? 'In de zon' : 'In de schaduw'}`
 
       const popup = new mapboxgl.Popup({ offset: 40, closeButton: false, maxWidth: '220px' }).setHTML(`
         <div class="popup">
-          <div class="popup-name">${terrace.name}</div>
+          <div class="popup-name">${escapeHtml(terrace.name)}</div>
           <div class="popup-row">
             <span class="popup-badge ${inSun ? 'sun' : 'shade'}">${inSun ? '☀️ In de zon' : '🌑 In de schaduw'}</span>
           </div>
-          <div class="popup-type">${terrace.type}${terrace.hasOutdoorSeating ? ' · 🪑 Buiten zitten' : ''}</div>
+          <div class="popup-type">${escapeHtml(terrace.type)}${terrace.hasOutdoorSeating ? ' · 🪑 Buiten zitten' : ''}</div>
           <div class="popup-action">Bekijk op kaart →</div>
         </div>
       `)
