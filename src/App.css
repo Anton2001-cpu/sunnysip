@@ -1,0 +1,530 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  height: 100vh;
+  overflow: hidden;
+}
+
+#root {
+  max-width: unset;
+  padding: 0;
+  text-align: unset;
+  height: 100vh;
+}
+
+/* Layout */
+.app {
+  position: relative;
+  height: 100vh;
+  width: 100vw;
+}
+
+.map {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+/* Floating panel */
+.sidebar {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  bottom: 12px;
+  width: 360px;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.18);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  z-index: 10;
+  color: #202124;
+}
+
+/* Panel header */
+.panel-header {
+  padding: 16px;
+  border-bottom: 1px solid #e8eaed;
+  flex-shrink: 0;
+}
+
+.logo-area {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.logo-icon {
+  font-size: 1.6rem;
+  line-height: 1;
+}
+
+.logo-text h1 {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #202124;
+  letter-spacing: -0.01em;
+}
+
+.logo-text p {
+  font-size: 0.78rem;
+  color: #5f6368;
+  margin-top: 1px;
+}
+
+.time-row {
+  display: flex;
+  gap: 8px;
+}
+
+.time-row input {
+  flex: 1;
+  min-width: 0;
+  background: #f8f9fa;
+  border: 1px solid #dadce0;
+  color: #202124;
+  padding: 8px 12px;
+  border-radius: 24px;
+  font-size: 0.85rem;
+  font-family: inherit;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.time-row input:focus {
+  outline: none;
+  border-color: #1a73e8;
+  box-shadow: 0 0 0 3px rgba(26,115,232,0.15);
+  background: #fff;
+}
+
+.now-btn {
+  background: #fbbc04;
+  color: #202124;
+  border: none;
+  border-radius: 24px;
+  padding: 8px 14px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  font-family: inherit;
+  transition: box-shadow 0.15s, filter 0.15s;
+}
+
+.now-btn:hover {
+  filter: brightness(0.95);
+  box-shadow: 0 1px 4px rgba(0,0,0,0.18);
+}
+
+/* Sun bar */
+.sun-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 16px;
+  background: #fffde7;
+  border-bottom: 1px solid #e8eaed;
+  flex-shrink: 0;
+}
+
+.sun-bar.night {
+  background: #f1f3f4;
+}
+
+.sun-bar-icon {
+  font-size: 1.4rem;
+  flex-shrink: 0;
+}
+
+.sun-bar-stats {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.sun-bar-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.sun-bar-stat span {
+  font-size: 0.65rem;
+  color: #5f6368;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 500;
+}
+
+.sun-bar-stat strong {
+  font-size: 0.88rem;
+  color: #202124;
+  font-weight: 600;
+}
+
+/* Count chips */
+.count-chips {
+  display: flex;
+  gap: 8px;
+  padding: 10px 16px;
+  border-bottom: 1px solid #e8eaed;
+  flex-shrink: 0;
+}
+
+.chip {
+  border-radius: 16px;
+  padding: 5px 12px;
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+.chip.sun {
+  background: #fffde7;
+  color: #e65100;
+}
+
+.chip.shade {
+  background: #f1f3f4;
+  color: #5f6368;
+}
+
+/* Loading bar */
+.loading-bar {
+  height: 3px;
+  background: linear-gradient(90deg, #fbbc04 0%, #1a73e8 50%, #fbbc04 100%);
+  background-size: 200% 100%;
+  animation: loading-slide 1.4s ease-in-out infinite;
+  flex-shrink: 0;
+}
+
+@keyframes loading-slide {
+  0% { background-position: 100% 0; }
+  100% { background-position: -100% 0; }
+}
+
+/* Section label */
+.list-section-label {
+  padding: 10px 16px 4px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: #5f6368;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  border-top: 1px solid #e8eaed;
+}
+
+.list-section-label:first-child {
+  border-top: none;
+}
+
+/* Terrace list */
+.terrace-list {
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  flex: 1;
+}
+
+.terrace-list::-webkit-scrollbar {
+  width: 4px;
+}
+
+.terrace-list::-webkit-scrollbar-thumb {
+  background: #dadce0;
+  border-radius: 4px;
+}
+
+.terrace-list::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.terrace-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 16px;
+  cursor: pointer;
+  transition: background 0.12s;
+  border-bottom: 1px solid #f1f3f4;
+}
+
+.terrace-item:last-child {
+  border-bottom: none;
+}
+
+.terrace-item:hover {
+  background: #f8f9fa;
+}
+
+.terrace-item.selected {
+  background: #e8f0fe;
+}
+
+/* Taak 24: fade-in bij laden */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.terrace-item {
+  animation: fadeIn 0.2s ease both;
+}
+
+.terrace-dot {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+  flex-shrink: 0;
+}
+
+.terrace-dot.sun {
+  background: #fffde7;
+}
+
+.terrace-dot.shade {
+  background: #f1f3f4;
+}
+
+.terrace-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.terrace-name {
+  font-size: 0.88rem;
+  font-weight: 500;
+  color: #202124;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.terrace-meta {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 2px;
+}
+
+.terrace-type {
+  font-size: 0.75rem;
+  color: #5f6368;
+  text-transform: capitalize;
+}
+
+.outdoor-badge {
+  font-size: 0.75rem;
+}
+
+.terrace-badge {
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: 12px;
+  flex-shrink: 0;
+}
+
+.terrace-badge.sun {
+  background: #fffde7;
+  color: #e65100;
+}
+
+.terrace-badge.shade {
+  background: #f1f3f4;
+  color: #5f6368;
+}
+
+/* Markers — Google Maps style pins */
+.terrace-marker {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+  filter: drop-shadow(0 2px 6px rgba(0,0,0,0.3));
+  transition: transform 0.15s;
+  user-select: none;
+}
+
+.terrace-marker:hover {
+  transform: scale(1.15) translateY(-2px);
+}
+
+.pin-body {
+  width: 36px;
+  height: 36px;
+  border-radius: 50% 50% 50% 0;
+  transform: rotate(-45deg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+}
+
+/* Taak 17a: emoji rechtop houden */
+.pin-emoji {
+  display: inline-block;
+  transform: rotate(45deg);
+}
+
+.in-sun .pin-body {
+  background: #fbbc04;
+  border: 2px solid #f9a825;
+}
+
+.in-shade .pin-body {
+  background: #e8eaed;
+  border: 2px solid #dadce0;
+}
+
+.pin-tip {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  margin-top: -1px;
+}
+
+.in-sun .pin-tip  { background: #f9a825; }
+.in-shade .pin-tip { background: #bdc1c6; }
+
+/* Locate button */
+.locate-btn {
+  position: absolute;
+  bottom: 120px;
+  right: 12px;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: #fff;
+  border: none;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+  font-size: 1.1rem;
+  cursor: pointer;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: box-shadow 0.15s;
+}
+
+.locate-btn:hover {
+  box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+}
+
+/* Move Mapbox attribution away from panel */
+.mapboxgl-ctrl-bottom-left {
+  left: 384px;
+}
+
+/* Popup — Google Maps style */
+.mapboxgl-popup-content {
+  border-radius: 12px !important;
+  padding: 14px 16px !important;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.15) !important;
+  font-family: 'Segoe UI', system-ui, sans-serif !important;
+  min-width: 180px;
+}
+
+.popup {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.popup-name {
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: #202124;
+  margin-bottom: 6px;
+}
+
+.popup-row {
+  display: flex;
+}
+
+.popup-badge {
+  font-size: 0.78rem;
+  padding: 2px 8px;
+  border-radius: 12px;
+  display: inline-block;
+  font-weight: 500;
+}
+
+.popup-badge.sun {
+  background: #fffde7;
+  color: #e65100;
+}
+
+.popup-badge.shade {
+  background: #f1f3f4;
+  color: #5f6368;
+}
+
+.popup-type {
+  font-size: 0.75rem;
+  color: #5f6368;
+  text-transform: capitalize;
+  margin-top: 4px;
+}
+
+.popup-action {
+  font-size: 0.75rem;
+  color: #1a73e8;
+  font-weight: 500;
+  margin-top: 8px;
+  cursor: pointer;
+}
+
+/* Empty state & error */
+.empty-state {
+  padding: 40px 16px;
+  text-align: center;
+  color: #9aa0a6;
+  font-size: 0.85rem;
+  line-height: 1.5;
+}
+
+.retry-btn {
+  margin-top: 12px;
+  background: #1a73e8;
+  color: #fff;
+  border: none;
+  border-radius: 20px;
+  padding: 7px 16px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+  transition: opacity 0.15s;
+}
+
+.retry-btn:hover {
+  opacity: 0.85;
+}
+
+/* Taak 20: compacter op kleine schermen */
+@media (max-height: 700px) {
+  .sun-bar {
+    padding: 6px 16px;
+  }
+  .sun-bar-stat strong {
+    font-size: 0.8rem;
+  }
+  .count-chips {
+    padding: 6px 16px;
+  }
+  .panel-header {
+    padding: 10px 16px 10px;
+  }
+}
