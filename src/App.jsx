@@ -28,8 +28,11 @@ export default function App() {
   const [loading, setLoading] = useState(false)
   const [selectedTime, setSelectedTime] = useState(() => {
     const now = new Date()
-    return now.toISOString().slice(0, 16)
+    return new Date(now.getTime() - now.getTimezoneOffset() * 60000).toISOString().slice(0, 16)
   })
+
+  const selectedDate = selectedTime.slice(0, 10)
+  const selectedHour = selectedTime.slice(11, 16)
   const [stats, setStats] = useState({ inSun: 0, inShade: 0 })
   const [terraceResults, setTerraceResults] = useState([])
   const [sunTimes, setSunTimes] = useState(null)
@@ -37,8 +40,16 @@ export default function App() {
   const [selectedId, setSelectedId] = useState(null)
 
   const debounceRef = useRef(null)
+  const cacheRef = useRef(new Map())
 
   const loadData = useCallback(async (lat, lng) => {
+    const key = `${lat.toFixed(2)},${lng.toFixed(2)}`
+    if (cacheRef.current.has(key)) {
+      const cached = cacheRef.current.get(key)
+      setTerraces(cached.terraces)
+      setBuildings(cached.buildings)
+      return
+    }
     setLoading(true)
     setError(false)
     try {
@@ -46,13 +57,13 @@ export default function App() {
         fetchTerraces(lat, lng, 400),
         fetchBuildings(lat, lng, 400),
       ])
-      // Taak 17b: verwijder duplicaten op ID
       const seen = new Set()
       const unique = newTerraces.filter(t => {
         if (seen.has(t.id)) return false
         seen.add(t.id)
         return true
       })
+      cacheRef.current.set(key, { terraces: unique, buildings: newBuildings })
       setTerraces(unique)
       setBuildings(newBuildings)
     } catch (e) {
@@ -137,8 +148,8 @@ export default function App() {
       const el = document.createElement('div')
       el.className = `terrace-marker ${inSun ? 'in-sun' : 'in-shade'}`
       el.innerHTML = `
-        <div class="pin-body"><span class="pin-emoji">${inSun ? '☀️' : '🌑'}</span></div>
-        <div class="pin-tip"></div>
+        <div class="pin-head">${inSun ? '☀️' : '🌑'}</div>
+        <div class="pin-point"></div>
       `
       el.title = `${escapeHtml(terrace.name)} — ${inSun ? 'In de zon' : 'In de schaduw'}`
 
@@ -153,7 +164,7 @@ export default function App() {
         </div>
       `)
 
-      const marker = new mapboxgl.Marker(el)
+      const marker = new mapboxgl.Marker(el, { anchor: 'bottom', offset: [0, -4] })
         .setLngLat(terrace.lngLat)
         .setPopup(popup)
         .addTo(map.current)
@@ -190,11 +201,22 @@ export default function App() {
             </div>
           </div>
           <div className="time-row">
-            <input
-              type="datetime-local"
-              value={selectedTime}
-              onChange={e => setSelectedTime(e.target.value)}
-            />
+            <div className="time-input-wrapper">
+              <span className="time-icon">📅</span>
+              <input
+                type="date"
+                value={selectedDate}
+                onChange={e => setSelectedTime(e.target.value + 'T' + selectedHour)}
+              />
+            </div>
+            <div className="time-input-wrapper">
+              <span className="time-icon">🕐</span>
+              <input
+                type="time"
+                value={selectedHour}
+                onChange={e => setSelectedTime(selectedDate + 'T' + e.target.value)}
+              />
+            </div>
             <button
               className="now-btn"
               onClick={() => {
